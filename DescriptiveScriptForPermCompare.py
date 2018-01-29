@@ -41,9 +41,13 @@ T978 = detPop.population(excelFileName = pathToExcelFile,excelSheetName = excelS
 
 #Force the calculation of the PDFs with the specified axis - important that we also pass these parameters to the
 #permutation comparison function (so that the comparison function is calculated on equivalent data)
+
+#Match the PDF axis
 DR584.calcDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
 T693.calcDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
 T978.calcDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
+
+#Match the CDF axis
 DR584.calcCDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
 T693.calcCDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
 T978.calcCDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
@@ -64,15 +68,25 @@ areLargeValuesMoreDifferent = True #For Dmax, large values are more different
 comp1 = perm.twoSampleProbability(DR584,T693,comparisonfunction,areLargeValuesMoreDifferent,
                                   minAge=minAge, maxAge=maxAge,dt=dt,nIters = 10000)
 
+#Get the p-Value estimate for this sample
+print('p-value for the null hypothesis that DR584 and TS93 were drawn from the same distribution: %.1e'%comp1.pVal)
+
+#Plot the result for comparisons for this sample
 plt.subplot(2,2,3)
 comp1.plotCDF(color = 'mediumseagreen',linewidth = 2,label = 'DR584 - T693')
 plt.xlabel('D-max',fontsize = 14)
 
+#Now compare two samples we expect to be different
 comparisonfunction = popMetrics.correlationCoeff #Here we will pass the actual function (so no ending parenthesis)
 areLargeValuesMoreDifferent = False #For correlation coefficient, large values are more similar
 comp2 = perm.twoSampleProbability(DR584,T978,comparisonfunction,areLargeValuesMoreDifferent,
                                   minAge=minAge, maxAge=maxAge,dt=dt,nIters = 10000)
 
+
+#Get the p-Value estimate for this sample
+print('p-value for the null hypothesis that DR584 and T978 were drawn from the same distribution: %.1e'%comp2.pVal)
+
+#Plot the result for comparisons for the second sample
 plt.subplot(2,2,4)
 comp2.plotCDF(color = 'darkorchid',linewidth = 2, label = 'DR584 - T978')
 plt.xlabel('Cross Correlation of PDPs',fontsize = 14)

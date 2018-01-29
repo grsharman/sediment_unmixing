@@ -112,13 +112,6 @@ class twoSampleProbability:
             pop1_i = population(ages=allAges[shuffledIndices == 0], errors=allErrors[shuffledIndices == 0],tmin=minAge, tmax=maxAge, delt=dt)
             pop2_i = population(ages=allAges[shuffledIndices == 1], errors=allErrors[shuffledIndices == 1],tmin=minAge, tmax=maxAge, delt=dt)
 
-            # # Make sure the axes match
-            # pop1_i.calcDF(forceCalc=True, tmin=minAge, tmax=maxAge, delt=dt)
-            # pop1_i.calcCDF(forceCalc=True, tmin=minAge, tmax=maxAge, delt=dt)
-            #
-            # pop2_i.calcDF(forceCalc=True, tmin=minAge, tmax=maxAge, delt=dt)
-            # pop2_i.calcCDF(forceCalc=True, tmin=minAge, tmax=maxAge, delt=dt)
-
             # Calculate this objectiveFunctionValue
             self._permVals[i] = objFunc(pop1_i, pop2_i)
 
@@ -126,7 +119,10 @@ class twoSampleProbability:
         self.pVal = self.getPforVal(self._thisVal)
 
     def getPforVal(self, Val):
-        ''' Lookup the probability associated with a specific value
+        '''
+        Lookup the probability associated with a specific value
+        :param Val: The value of the comparison function to get p for
+        :return:
         '''
 
         if self.areLargeValuesMoreDifferent:
@@ -148,21 +144,22 @@ class twoSampleProbability:
 
     def plot_frequencyValue(self, **kwargs):
         ''' Create a plot of the p value as a function of different objective function values
+        :param kwargs: passed to matplotlib plot function that plots p as a function of comparison functions
         '''
 
         psToPlot = np.logspace(-3, 0, 100)
 
         vals = np.array([self.getValForP(p) for p in psToPlot])
 
-        plt.plot(vals, psToPlot, '-o', **kwargs)
-
+        plt.plot(vals, psToPlot, '-', **kwargs)
+        plt.yscale('log')
         plt.xlabel('Function value', fontsize=14)
         plt.ylabel('$p$', fontsize=14)
 
     def plotCDF(self,**kwargs):
         '''
         Create a plot of the distribution of the permuted comparison values
-        :param kwargs:
+        :param kwargs: passed to matplotlib plot function that plots CDF of permuted comparisons
         :return:
         '''
 
