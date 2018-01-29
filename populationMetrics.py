@@ -191,7 +191,7 @@ def likeness(pop1,pop2):
         print('Error, both inputs must be population objects, second is not')
         pass
     
-    if np.any(np.logical_not(pop1._tAxisPDF_ == pop2._tAxisPDF_)):
+    if np.any(np.logical_not(pop1._tAxisDF_ == pop2._tAxisDF_)):
         print('Error, age axes of PDFs do not match')
         pass
     
