@@ -93,3 +93,66 @@ plt.xlabel('Cross Correlation of PDPs',fontsize = 14)
 plt.ylabel('')
 
 
+#### Now make a new plot to highlight how different comparison metrics yield different significances
+
+#Load in two samples that aren't particularly different
+T755 = detPop.population(excelFileName = pathToExcelFile,excelSheetName = excelSheet,ageHeader = ageHeader,
+                        errorHeader = errorHeader,sampleIDfield=sampleID,sampleID = 'T755')
+#Sample T978, which mixture modelling of Sharman and Johnstone, 2017 suggests is pretty different to DR584
+MAN = detPop.population(excelFileName = pathToExcelFile,excelSheetName = excelSheet,ageHeader = ageHeader,
+                        errorHeader = errorHeader,sampleIDfield=sampleID,sampleID = 'MAN')
+
+#Force the calculation of the PDFs with the specified axis - important that we also pass these parameters to the
+#permutation comparison function (so that the comparison function is calculated on equivalent data)
+#Match the PDF axis
+T755.calcDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
+MAN.calcDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
+
+#Match the CDF axis
+T755.calcCDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
+MAN.calcCDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = dt)
+
+
+
+#Try out some comparisons with different metrics
+metricsToTest = [popMetrics.Dmax, popMetrics.similarity, popMetrics.correlationCoeff] #List of functions to test
+metricNames = ['D-Max', 'Similarity', 'Correlation of PDPs'] #Names of these functions
+colors = ['darkcyan','seagreen', 'lightcoral'] #colors to plot these as
+areLargeValuesMoreDifferentList = [True, False, False] #directoinality of these functions
+
+#Store the comparisons
+allComps = []
+
+#Make some plots of the data
+plt.figure()
+
+plt.subplot(2,len(metricsToTest)+1,1)
+#For plotting stacked histograms
+#plt.subplot(2,1,1)
+
+T755.plotDF(color = 'orangered',linewidth = 2, label = 'T755')
+MAN.plotDF(color = 'dodgerblue', linewidth = 2, label = 'MAN')
+
+
+#Loop through these comparisons
+for i,metric in enumerate(metricsToTest):
+    comp = perm.twoSampleProbability(T755, MAN, metric, areLargeValuesMoreDifferentList[i],
+                                      minAge=minAge, maxAge=maxAge, dt=dt, nIters=5000)
+
+    #### Plotting each metric independently
+    plt.subplot(1,len(metricsToTest)+1,i+2)
+    comp.plotHist(color = colors[i],label = metricNames[i])
+    plt.legend(loc = 'best')
+
+    #### Plotting everything on the same plot
+    # plt.subplot(2,2,3)
+    # # comp.plotCDF(normPermVals=True,color = colors[i],label = metricNames[i])
+    # comp.plotHist(normPermVals=True,bins = 100, histtype = 'stepfilled',normed = True,color = colors[i],alpha = 0.5,label = metricNames[i])
+    #
+    # plt.subplot(2,2,4)
+    # comp.plot_frequencyValue(normPermVals=True,color = colors[i],label = metricNames[i])
+
+    #Store the comparisons...
+    allComps.append(comp)
+
+# plt.legend(loc = 'best')

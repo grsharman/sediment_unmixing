@@ -142,24 +142,31 @@ class twoSampleProbability:
         else:
             return np.percentile(self._permVals, p*100.0)
 
-    def plot_frequencyValue(self, **kwargs):
+    def plot_frequencyValue(self, normPermVals = True, **kwargs):
         ''' Create a plot of the p value as a function of different objective function values
+        :param normPermVals: boolean, should the permuted comparison function values be normalized and scaled to span from 0-1
         :param kwargs: passed to matplotlib plot function that plots p as a function of comparison functions
         '''
 
         psToPlot = np.logspace(-3, 0, 100)
 
         vals = np.array([self.getValForP(p) for p in psToPlot])
+        thisVal = self._thisVal
+        if normPermVals:
+            vals = (vals - np.min(vals))/(np.max(vals) - np.min(vals))
+            thisVal = (thisVal - np.min(vals))/(np.max(vals) - np.min(vals))
 
         plt.plot(vals, psToPlot, '-', **kwargs)
+        # plt.plot([np.min(vals), thisVal, thisVal], [self.pVal, self.pVal, np.min(psToPlot)],'--', **kwargs)
         plt.yscale('log')
         plt.xlabel('Function value', fontsize=14)
         plt.ylabel('$p$', fontsize=14)
 
-    def plotCDF(self,**kwargs):
+    def plotCDF(self,normPermVals = False, **kwargs):
         '''
         Create a plot of the distribution of the permuted comparison values
         :param kwargs: passed to matplotlib plot function that plots CDF of permuted comparisons
+        :param normPermVals: boolean, should the permuted comparison function be normalized and scaled to span from 0-1
         :return:
         '''
 
@@ -175,8 +182,34 @@ class twoSampleProbability:
         for i,val in enumerate(valsToPlot):
             CDF[i] = np.float(np.sum(self._permVals >=val))/np.float(self.nIters)
 
+        thisVal = self._thisVal
+        if normPermVals:
+            valsToPlot = (valsToPlot - np.min(valsToPlot))/(np.max(valsToPlot) - np.min(valsToPlot))
+            thisVal = (thisVal - np.min(self._permVals)) / (np.max(self._permVals) - np.min(self._permVals))
+
         #plot the data
         plt.plot(valsToPlot,CDF,'-',**kwargs)
-        plt.plot([self._thisVal, self._thisVal], [0, 1], '--k', label = r'$p =$ %.1e'%self.pVal)
+        plt.plot([thisVal, thisVal], [0, 1], '--k', label = r'$p =$ %.1e'%self.pVal)
+        plt.ylabel('Fraction of larger values',fontsize = 13)
+        plt.legend(loc = 'best')
+
+    def plotHist(self,normPermVals = False, **kwargs):
+        '''
+        Create a plot of the distribution of the permuted comparison values
+        :param kwargs: passed to matplotlib plot.hist function
+        :param normPermVals: boolean, should the permuted comparison function be normalized and scaled to span from 0-1
+        :return:
+        '''
+
+        if normPermVals:
+            valsToPlot = (self._permVals - np.min(self._permVals))/(np.max(self._permVals) - np.min(self._permVals))
+            thisVal = (self._thisVal - np.min(self._permVals)) / (np.max(self._permVals) - np.min(self._permVals))
+        else:
+            valsToPlot = self._permVals
+            thisVal = self._thisVal
+
+        #plot the data
+        plt.hist(valsToPlot,**kwargs)
+        plt.plot([thisVal, thisVal], plt.gca().get_ylim(), '--k', label = r'$p =$ %.1e'%self.pVal)
         plt.ylabel('Fraction of larger values',fontsize = 13)
         plt.legend(loc = 'best')
