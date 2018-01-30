@@ -93,7 +93,8 @@ plt.xlabel('Cross Correlation of PDPs',fontsize = 14)
 plt.ylabel('')
 
 
-#### Now make a new plot to highlight how different comparison metrics yield different significances
+#### Now make a new plot to highlight how different comparison metrics yield different significances, in other words how
+# sensitive are these different metrics?
 
 #Load in two samples that aren't particularly different
 T755 = detPop.population(excelFileName = pathToExcelFile,excelSheetName = excelSheet,ageHeader = ageHeader,
@@ -126,7 +127,7 @@ allComps = []
 #Make some plots of the data
 plt.figure()
 
-plt.subplot(2,len(metricsToTest)+1,1)
+plt.subplot(len(metricsToTest)+1,1,1)
 #For plotting stacked histograms
 #plt.subplot(2,1,1)
 
@@ -140,7 +141,7 @@ for i,metric in enumerate(metricsToTest):
                                       minAge=minAge, maxAge=maxAge, dt=dt, nIters=5000)
 
     #### Plotting each metric independently
-    plt.subplot(1,len(metricsToTest)+1,i+2)
+    plt.subplot(len(metricsToTest)+1,1,i+2)
     comp.plotHist(color = colors[i],label = metricNames[i])
     plt.legend(loc = 'best')
 
