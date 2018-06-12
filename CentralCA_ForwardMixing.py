@@ -106,7 +106,7 @@ cfun = cm.get_cmap(daughterCmap)
 daughterColors = [cfun(i) for i in np.linspace(0,1,len(daughterSet))]
 
 cfun = cm.get_cmap(parentCmap)
-parentColors = [cfun(i) for i in np.linspace(0,1,len(daughterSet))]
+parentColors = [cfun(i) for i in np.linspace(0,1,len(parentSet))]
 
 for i,daughter in enumerate(daughterSet):
     daughter.calcDF(forceCalc = True, tmin = minAge, tmax = maxAge, delt = tSpacing)
